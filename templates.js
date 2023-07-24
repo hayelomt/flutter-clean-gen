@@ -41,9 +41,34 @@ export 'models/${snakeCase(modelName)}_model.dart';
 export 'repos/${snakeCase(modelName)}_repo_impl.dart';
 `;
 
-exports.entityTemplate = (modelName) => `
-class ${pascalCase(modelName)} {
+exports.modelTemplate = (modelName, fields = '') => `
+part '${snakeCase(modelName)}_model.g.dart';
 
+@JsonSerializable()
+class ${pascalCase(modelName)}Model {
+  ${fields}
+
+
+  factory ${pascalCase(modelName)}Model.fromJson(Map<String, dynamic> json) =>
+      _$${pascalCase(modelName)}ModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$${pascalCase(modelName)}ModelToJson(this);
+
+  factory ${pascalCase(modelName)}Model.fromDocument(
+      QueryDocumentSnapshot<Map<String, dynamic>> snap) {
+    final doc = snap.data();
+    doc['id'] = snap.id;
+
+    return ${pascalCase(modelName)}Model.fromJson(doc);
+  }
+
+  ${pascalCase(modelName)} get entity => ${pascalCase(modelName)}
+}
+`;
+
+exports.entityTemplate = (modelName, fields = '') => `
+class ${pascalCase(modelName)} {
+${fields}
 }
 `;
 
